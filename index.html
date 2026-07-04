@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta name="google" content="notranslate">
-    <title>El ojo humano</title>
+    <title>El oído</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/icono.ico">
     <style>
         * { box-sizing: border-box; margin:0; padding:0; }
@@ -21,6 +21,9 @@
             --green:#2ecc71;
             --red:#e74c3c;
             --panel:#E8EAFF;
+            --pastel-blue:#e3f2fd;
+            --pastel-orange:#ffe0b2;
+            --pastel-purple:#f3e5f5;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -99,14 +102,17 @@
         }
         .theory-title { color:var(--blue-dark); font-weight:800; font-size:1.3rem; margin-bottom:10px; display:block; }
         .theory-highlight { color:var(--orange); font-weight:700; }
+        .theory-section { margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid #e0e0e0; }
+        .theory-section:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+        .theory-subtitle { color:var(--blue-700); font-weight:800; font-size:1.05rem; display:block; margin-bottom:4px; }
         .theory-list { padding-left:1.2rem; margin-top:6px; }
-        .theory-list li { margin-bottom:8px; }
-        .theory-list li strong { color:var(--blue-700); }
+        .theory-list li { margin-bottom:6px; }
+        .theory-note { margin-top:10px; font-style:italic; color:#555; font-size:.95rem; }
 
-        /* Pantalla Juego: El ojo (casillas sobre imagen) */
-        .eye-game-wrapper { display:flex; flex-direction:column; align-items:center; gap:1rem; flex:1; padding:.2rem 0 1rem; }
-        .eye-word-display { display:flex; align-items:center; justify-content:center; gap:.8rem; max-width:100%; }
-        #eyeWordText { font-size:clamp(1.05rem,3.1vw,1.7rem); font-weight:900; color:var(--blue-dark); background:var(--panel);
+        /* Pantalla Juego 1 y 2: casillas sobre imagen */
+        .ear-game-wrapper { display:flex; flex-direction:column; align-items:center; gap:1rem; flex:1; padding:.2rem 0 1rem; }
+        .ear-word-display { display:flex; align-items:center; justify-content:center; gap:.8rem; max-width:100%; }
+        #earWordText { font-size:clamp(1.05rem,3.1vw,1.7rem); font-weight:900; color:var(--blue-dark); background:var(--panel);
             padding:.55rem 1.3rem; border-radius:14px; box-shadow:0 3px 8px rgba(0,0,0,.08); min-width:150px; max-width:600px;
             text-align:center; line-height:1.25; }
         .btn-play-word { width:46px; height:46px; border-radius:50%; background:var(--blue-600); border:2px solid #fff; color:#fff;
@@ -116,20 +122,59 @@
         .btn-play-word:active { transform:scale(.94); }
         .btn-play-word svg { width:18px; height:18px; margin-left:2px; pointer-events:none; }
 
-        .eye-image-wrapper { position:relative; width:100%; max-width:640px; aspect-ratio:1134/850; margin:0 auto;
+        .ear-image-wrapper { position:relative; width:100%; max-width:640px; aspect-ratio:1134/850; margin:0 auto;
             border-radius:14px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.12); background:#eef2f9; }
-        .eye-image-wrapper img { position:absolute; inset:0; width:100%; height:100%; object-fit:fill;
+        .ear-image-wrapper img { position:absolute; inset:0; width:100%; height:100%; object-fit:fill;
             user-select:none; -webkit-user-drag:none; pointer-events:none; }
-        .eye-image-wrapper.img-error::after {
+        .ear-image-wrapper.img-error::after {
             content:'Imagen no disponible'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
             text-align:center; padding:1rem; color:var(--blue-700); font-weight:700; background:#eef2f9;
         }
-        .eye-hotspot { position:absolute; border:2px solid #000; background:#ffffff; cursor:pointer;
+        .ear-hotspot { position:absolute; border:2px solid #000; background:#ffffff; cursor:pointer;
             border-radius:10px; transition:background-color .1s ease, border-color .1s ease; touch-action:manipulation;
             box-shadow:0 2px 6px rgba(0,0,0,.18); }
-        .eye-hotspot:hover { transform:scale(1.03); }
-        .eye-hotspot.flash-correct { background:var(--green); border-color:var(--green); }
-        .eye-hotspot.flash-incorrect { background:var(--red); border-color:var(--red); animation:shakeAnim .3s ease-in-out; }
+        .ear-hotspot:hover { transform:scale(1.03); }
+        .ear-hotspot.flash-correct { background:var(--green); border-color:var(--green); }
+        .ear-hotspot.flash-incorrect { background:var(--red); border-color:var(--red); animation:shakeAnim .3s ease-in-out; }
+
+        /* Pantalla Juego 3: Clasificación */
+        .classify-layout { display:flex; flex-direction:column; height:100%; gap:.9rem; padding-bottom:.5rem; flex:1; }
+        .classify-instructions { color:#d35400; font-weight:900; text-align:center; font-size:1.05rem; }
+        .bank-area { background:#fdfdfd; background-image:radial-gradient(#cbd5e1 1px, transparent 1px); background-size:15px 15px;
+            padding:12px; border-radius:12px; min-height:64px; display:flex; flex-wrap:wrap; justify-content:center;
+            align-items:center; gap:8px; border:2px dashed #b0bec5; }
+        .draggable-item { background:#ffffff; border:1px solid #e0e0e0; color:#455a64; padding:8px 14px; border-radius:25px;
+            cursor:grab; font-weight:700; font-size:.92rem; box-shadow:0 3px 5px rgba(0,0,0,0.08); transition:all .2s;
+            user-select:none; text-align:center; }
+        .draggable-item:active { cursor:grabbing; }
+        .draggable-item:hover { background:#f8f9fa; transform:translateY(-2px); border-color:var(--blue-700); }
+        .draggable-item.selected { background:var(--orange); color:#fff; border:none; transform:translateY(-2px) scale(1.05); }
+        .draggable-item.dragging { opacity:.4; }
+        .draggable-item.correct { background:rgba(46,204,113,.55); color:#fff; border:none; box-shadow:0 4px 10px rgba(46,204,113,.4); }
+        .draggable-item.correct::before { content:'✓ '; font-weight:900; }
+        .draggable-item.wrong { background:rgba(231,76,60,.55); color:#fff; border:none; box-shadow:0 4px 10px rgba(231,76,60,.4); animation:shakeAnim .5s ease-in-out; }
+        .draggable-item.wrong::before { content:'✕ '; font-weight:900; }
+
+        .sorting-area { flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:.9rem; }
+        @media (max-width:700px) { .sorting-area { grid-template-columns:1fr; } }
+        .sort-box { border-radius:10px; padding:10px; display:flex; flex-direction:column; min-height:110px; border:2px solid; transition:background-color .15s; }
+        .sort-box.drag-over { filter:brightness(.96); }
+        .box-externo { background:var(--pastel-blue); border-color:#bbdefb; }
+        .box-medio { background:var(--pastel-orange); border-color:#ffe0b2; }
+        .box-interno { background:var(--pastel-purple); border-color:#e1bee7; }
+        .sort-box-header { font-weight:800; text-align:center; margin-bottom:8px; padding-bottom:6px;
+            border-bottom:2px solid rgba(0,0,0,0.06); font-size:.98rem; }
+        .box-externo .sort-box-header { color:var(--blue-700); }
+        .box-medio .sort-box-header { color:var(--orange-700); }
+        .box-interno .sort-box-header { color:#6a1b9a; }
+        .sort-content { flex:1; display:flex; flex-wrap:wrap; gap:6px; justify-content:center; align-content:flex-start; min-height:40px; }
+        .sort-content .draggable-item { background:rgba(255,255,255,.95); font-size:.86rem; padding:6px 10px; }
+        .sort-content .draggable-item.correct { background:rgba(46,204,113,.55); }
+        .sort-content .draggable-item.wrong { background:rgba(231,76,60,.55); }
+        .sort-box.disabled, .bank-area.disabled { pointer-events:none; }
+        .classify-actions { text-align:center; }
+        .btn-continue-classify { display:none; }
+        .btn-continue-classify.show { display:inline-flex; }
 
         /* Pantalla Final */
         .results { display:flex; flex-direction:column; align-items:center; gap:.6rem; text-align:center; flex:1; justify-content:center; }
@@ -193,8 +238,8 @@
     <!-- ===== PANTALLA INICIO ===== -->
     <section class="screen active" id="startScreen">
         <header>
-            <h1 id="startTitle">El ojo humano</h1>
-            <div class="subtitle" id="startSubtitle">Parte exterior e interior del ojo humano</div>
+            <h1 id="startTitle">El oído</h1>
+            <div class="subtitle" id="startSubtitle">Identifica los órganos que intervienen en el sentido del oído</div>
         </header>
         <div class="start-content">
             <div class="advice-box" id="startAdvice"></div>
@@ -217,51 +262,75 @@
         </div>
     </section>
 
-    <!-- ===== PANTALLA RESUMEN 1 (OJO EXTERNO) ===== -->
-    <section class="screen" id="summary1Screen">
-        <header><h1 id="summary1Header">Ojo externo</h1></header>
-        <div class="summary-wrapper"><div class="theory-box" id="summary1Body"></div></div>
+    <!-- ===== PANTALLA RESUMEN ===== -->
+    <section class="screen" id="summaryScreen">
+        <header><h1 id="summaryHeader">El sentido del oído</h1></header>
+        <div class="summary-wrapper"><div class="theory-box" id="summaryBody"></div></div>
         <div style="text-align:center;padding:0 0 1rem;">
-            <button class="btn btn-primary" id="continue1Btn">Continuar</button>
+            <button class="btn btn-primary" id="continueSummaryBtn">Continuar</button>
         </div>
     </section>
 
-    <!-- ===== PANTALLA JUEGO (reutilizada por los 4 juegos) ===== -->
+    <!-- ===== PANTALLA JUEGO (reutilizada por juego 1 y juego 2) ===== -->
     <section class="screen" id="gameScreen">
         <header>
-            <h1 id="gameTitle">Identifica las partes del ojo externo</h1>
+            <h1 id="gameTitle">Identifica las partes del oído</h1>
         </header>
         <div class="game-info">
             <div class="timer" id="timerDisplay">00:00.0</div>
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         </div>
-        <div class="eye-game-wrapper">
-            <div class="eye-word-display">
-                <span id="eyeWordText"></span>
+        <div class="ear-game-wrapper">
+            <div class="ear-word-display">
+                <span id="earWordText"></span>
                 <button class="btn-play-word" id="btnPlayWord" title="Escuchar">
                     <svg viewBox="0 0 24 24" fill="#fff"><polygon points="6,4 20,12 6,20"></polygon></svg>
                 </button>
             </div>
-            <div class="eye-image-wrapper" id="eyeImageWrapper">
-                <img id="eyeImg" src="" alt="El ojo humano">
-                <div id="eyeHotspots"></div>
+            <div class="ear-image-wrapper" id="earImageWrapper">
+                <img id="earImg" src="" alt="El oído humano">
+                <div id="earHotspots"></div>
             </div>
         </div>
     </section>
 
-    <!-- ===== PANTALLA RESUMEN 2 (OJO INTERNO) ===== -->
-    <section class="screen" id="summary2Screen">
-        <header><h1 id="summary2Header">Ojo interno</h1></header>
-        <div class="summary-wrapper"><div class="theory-box" id="summary2Body"></div></div>
-        <div style="text-align:center;padding:0 0 1rem;">
-            <button class="btn btn-primary" id="continue2Btn">Continuar</button>
+    <!-- ===== PANTALLA JUEGO 3: CLASIFICAR ===== -->
+    <section class="screen" id="classifyScreen">
+        <header>
+            <h1 id="classifyTitle">Clasifica las partes del oído</h1>
+        </header>
+        <div class="game-info">
+            <div class="timer" id="timerDisplay3">00:00.0</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill3"></div></div>
+        </div>
+        <div class="classify-layout">
+            <div class="classify-instructions" id="classifyInstructions">Clasifica los elementos en las cajas correctas</div>
+            <div class="bank-area" id="classifyBank"></div>
+            <div class="sorting-area">
+                <div class="sort-box box-externo" data-type="externo">
+                    <div class="sort-box-header" id="boxExternoLabel">Oído externo</div>
+                    <div class="sort-content"></div>
+                </div>
+                <div class="sort-box box-medio" data-type="medio">
+                    <div class="sort-box-header" id="boxMedioLabel">Oído medio</div>
+                    <div class="sort-content"></div>
+                </div>
+                <div class="sort-box box-interno" data-type="interno">
+                    <div class="sort-box-header" id="boxInternoLabel">Oído interno</div>
+                    <div class="sort-content"></div>
+                </div>
+            </div>
+            <div class="classify-actions">
+                <button class="btn btn-primary" id="checkClassifyBtn">Comprobar</button>
+                <button class="btn btn-blue btn-continue-classify" id="continueClassifyBtn">Continuar</button>
+            </div>
         </div>
     </section>
 
     <!-- ===== PANTALLA FINAL ===== -->
     <section class="screen" id="finalScreen">
         <header>
-            <h1 class="final-title" id="finalTitle">Sentido de la vista</h1>
+            <h1 class="final-title" id="finalTitle">Sentido del oído</h1>
         </header>
         <div class="results">
             <div id="trophyBox">🏆</div>
@@ -295,14 +364,12 @@
 /* ====================================================
    CONFIGURACIÓN GLOBAL
 ===================================================== */
-const SHEET_NAME = "Ojo";
+const SHEET_NAME = "Oído";
 const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxV6Bs0TlqjtE8nY-df6NsUSZTxVCcKYv1DuLmwEbbuRDt3sNs84QEz9MLe4_Aigywuag/exec";
-const EXT_IMG_URL = "https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO4/Relacion/ojo4.png";
-const INT_IMG_URL = "https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO4/Relacion/Ojo6.png";
+const EAR_IMG_URL = "https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO4/Relacion/Oido3.png";
 const IMG_W = 1134;
 const IMG_H = 850;
-const MIN_ATTEMPTS = 26;   // 7 + 7 + 6 + 6
-const TOTAL_ITEMS  = 26;
+const TOTAL_ITEMS = 18; // 6 (juego1) + 6 (juego2) + 6 (juego3)
 
 let currentLang = 'es';
 let soundEnabled = true;
@@ -314,100 +381,63 @@ let elapsed = 0;
 let timerStopped = false;
 let finalTimeVal = 0;
 let finalScoreVal = 0;
-let totalAttempts = 0;
 let correctCountGlobal = 0;
 let isHofLoading = false;
 let activeGame = null;
 
 /* ====================================================
-   COORDENADAS DE LAS CASILLAS (posiciones fijas)
+   COORDENADAS DE LAS CASILLAS (mismas para juego 1 y 2)
 ===================================================== */
-// Ojo externo (juegos 1a y 1b) — imagen 1134 x 850
-const extCoords = [
-    { x1:7,   y1:625, x2:175,  y2:783 },  // 0 Lagrimal
-    { x1:193, y1:625, x2:362,  y2:783 },  // 1 Iris
-    { x1:423, y1:658, x2:591,  y2:813 },  // 2 Pupila
-    { x1:810, y1:449, x2:978,  y2:606 },  // 3 Pestaña
-    { x1:817, y1:233, x2:984,  y2:388 },  // 4 Párpado
-    { x1:789, y1:33,  x2:958,  y2:190 },  // 5 Ceja
-    { x1:659, y1:621, x2:827,  y2:776 }   // 6 Esclerótica
+const earCoords = [
+    { x1:14,  y1:379, x2:176,  y2:530 },  // 0 Oreja
+    { x1:305, y1:669, x2:468,  y2:822 },  // 1 Conducto auditivo
+    { x1:506, y1:579, x2:667,  y2:730 },  // 2 Tímpano
+    { x1:468, y1:38,  x2:629,  y2:191 },  // 3 Huesecillos
+    { x1:933, y1:515, x2:1093, y2:666 },  // 4 Caracol
+    { x1:902, y1:69,  x2:1064, y2:221 }   // 5 Nervio auditivo
 ];
-// Ojo interno (juegos 2a y 2b) — imagen 1134 x 850
-const intCoords = [
-    { x1:78,  y1:22,  x2:261,  y2:195 },  // 0 Córnea
-    { x1:40,  y1:295, x2:223,  y2:467 },  // 1 Iris
-    { x1:88,  y1:533, x2:269,  y2:705 },  // 2 Pupila
-    { x1:381, y1:616, x2:563,  y2:789 },  // 3 Cristalino
-    { x1:897, y1:45,  x2:1078, y2:218 },  // 4 Retina
-    { x1:801, y1:599, x2:980,  y2:770 }   // 5 Nervio óptico
-];
+
+/* Tipo de oído al que pertenece cada elemento (para el juego 3) */
+const classifyTypes = ['externo', 'externo', 'medio', 'medio', 'interno', 'interno'];
 
 /* ====================================================
    DATOS I18N (mismo nº de elementos y mismo orden en ambos idiomas)
 ===================================================== */
 const gameDataI18n = {
     es: {
-        ext1: [
-            { text:"Lagrimal" }, { text:"Iris" }, { text:"Pupila" }, { text:"Pestaña" },
-            { text:"Párpado" }, { text:"Ceja" }, { text:"Esclerótica" }
+        g1: [
+            { text:"Oreja" }, { text:"Conducto auditivo" }, { text:"Tímpano" },
+            { text:"Huesecillos" }, { text:"Caracol" }, { text:"Nervio auditivo" }
         ],
-        ext2: [
-            { text:"Producen lágrimas para humedecer el ojo" },
-            { text:"Parte coloreada del ojo" },
-            { text:"Hueco por donde entra la luz" },
-            { text:"Protegen el ojo de polvo y pequeñas partículas" },
-            { text:"Se cierran para proteger el ojo y extender las lágrimas" },
-            { text:"Evitan que el sudor de la frente entre en el ojo" },
-            { text:"Parte blanca del ojo" }
-        ],
-        int1: [
-            { text:"Córnea" }, { text:"Iris" }, { text:"Pupila" },
-            { text:"Cristalino" }, { text:"Retina" }, { text:"Nervio óptico" }
-        ],
-        int2: [
-            { text:"Capa protectora del ojo" },
-            { text:"Se abre y se cierra para dejar pasar la luz" },
-            { text:"Hueco por donde entra la luz" },
-            { text:"Lente que enfoca la luz en la retina" },
-            { text:"Recibe la información y la envía al nervio óptico" },
+        g2: [
+            { text:"Parte externa que ayuda a recoger sonidos" },
+            { text:"Canal que lleva el sonido hasta el oído medio" },
+            { text:"Membrana que vibra y transmite la vibración a los huesecillos" },
+            { text:"Envían la vibración al caracol" },
+            { text:"Envía la información al nervio auditivo" },
             { text:"Envía la información al cerebro" }
         ]
     },
     en: {
-        ext1: [
-            { text:"Tear duct" }, { text:"Iris" }, { text:"Pupil" }, { text:"Eyelashes" },
-            { text:"Eyelids" }, { text:"Eyebrows" }, { text:"Sclera" }
+        g1: [
+            { text:"Ear" }, { text:"Ear canal" }, { text:"Eardrum" },
+            { text:"Ossicles" }, { text:"Cochlea" }, { text:"Auditory nerve" }
         ],
-        ext2: [
-            { text:"Produces tears to humidify the eye" },
-            { text:"The coloured part of the eye" },
-            { text:"The hole where light enters" },
-            { text:"Protect the eye from dust and small particles" },
-            { text:"Close to protect the eye and spread tears" },
-            { text:"Prevent sweat from entering the eye" },
-            { text:"The white part of the eye" }
-        ],
-        int1: [
-            { text:"Cornea" }, { text:"Iris" }, { text:"Pupil" },
-            { text:"Crystalline lens" }, { text:"Retina" }, { text:"Optic nerve" }
-        ],
-        int2: [
-            { text:"The protective layer of the eye" },
-            { text:"Opens and closes to let the light pass" },
-            { text:"The hole where light enters" },
-            { text:"The lens that focuses light on the retina" },
-            { text:"Receives the information and sends it to the optic nerve" },
-            { text:"Sends the information to the brain" }
+        g2: [
+            { text:"The external part that helps to capture sounds" },
+            { text:"Tube that passes the sound to the middle ear" },
+            { text:"A membrane that vibrates and transmits the vibration to the ossicles" },
+            { text:"Pass the vibration to the cochlea" },
+            { text:"Sends the information to the auditory nerve" },
+            { text:"Passes the information to the brain" }
         ]
     }
 };
 
-/* Configuración de cada uno de los 4 juegos */
+/* Configuración de cada uno de los 2 juegos de casillas */
 const GAMES = {
-    game1a: { img: EXT_IMG_URL, coords: extCoords, dataKey: 'ext1', count: 7 },
-    game1b: { img: EXT_IMG_URL, coords: extCoords, dataKey: 'ext2', count: 7 },
-    game2a: { img: INT_IMG_URL, coords: intCoords, dataKey: 'int1', count: 6 },
-    game2b: { img: INT_IMG_URL, coords: intCoords, dataKey: 'int2', count: 6 }
+    game1: { dataKey: 'g1', count: 6 },
+    game2: { dataKey: 'g2', count: 6 }
 };
 
 /* ====================================================
@@ -415,37 +445,38 @@ const GAMES = {
 ===================================================== */
 const i18n = {
     es: {
-        startTitle: 'El ojo humano',
-        startSubtitle: 'Parte exterior e interior del ojo humano',
-        startAdvice: 'Repasa y aprende las partes principales del <span class="highlight-keyword">ojo externo</span> (cejas, pestañas, párpados, lagrimal, esclerótica, iris, pupila) y del <span class="highlight-keyword">ojo interno</span> (córnea, iris, pupila, cristalino, retina y nervio óptico).<strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong>',
+        startTitle: 'El oído',
+        startSubtitle: 'Identifica los órganos que intervienen en el sentido del oído',
+        startAdvice: 'Repasa y aprende las partes principales del <span class="highlight-keyword">oído externo</span> (oreja, canal auditivo), <span class="highlight-keyword">oído medio</span> (tímpano y huesecillos) y del <span class="highlight-keyword">oído interno</span> (caracol y nervio auditivo).<strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong>',
         startBtn: 'Comenzar',
         hofTitle: 'Mejores puntuaciones',
         hofPos: 'Posición', hofName: 'Nombre', hofPoints: 'Puntos', hofTime: 'Tiempo',
-        summary1Header: 'Ojo externo',
-        summary2Header: 'Ojo interno',
+        summaryHeader: 'El sentido del oído',
         continueBtn: 'Continuar',
-        summary1HTML: '<span class="theory-title">Partes del ojo externo</span><ul class="theory-list">'
-            + '<li><strong>Cejas:</strong> Evitan que el sudor de la frente entre en el ojo.</li>'
-            + '<li><strong>Pestañas:</strong> Protegen el ojo de polvo y pequeñas partículas.</li>'
-            + '<li><strong>Lagrimal:</strong> Producen lágrimas para humedecer el ojo.</li>'
-            + '<li><strong>Párpados:</strong> Se cierran para proteger el ojo y extender las lágrimas.</li>'
-            + '<li><strong>Esclerótica:</strong> Parte blanca del ojo.</li>'
-            + '<li><strong>Iris:</strong> Parte coloreada del ojo.</li>'
-            + '<li><strong>Pupila:</strong> Hueco por donde entra la luz.</li>'
-            + '</ul>',
-        summary2HTML: '<span class="theory-title">Partes del ojo interno</span><ul class="theory-list">'
-            + '<li><strong>Córnea:</strong> Capa protectora del ojo.</li>'
-            + '<li><strong>Iris:</strong> Se abre y se cierra para dejar pasar la luz.</li>'
-            + '<li><strong>Pupila:</strong> Hueco por donde entra la luz.</li>'
-            + '<li><strong>Cristalino:</strong> Lente que enfoca la luz en la retina.</li>'
-            + '<li><strong>Retina:</strong> Envía la información al nervio óptico.</li>'
-            + '<li><strong>Nervio óptico:</strong> Envía la información al cerebro.</li>'
-            + '</ul>',
-        game1aTitle: 'Identifica las partes del ojo externo',
-        game1bTitle: 'Identifica las partes del ojo externo',
-        game2aTitle: 'Señala las partes del ojo interno',
-        game2bTitle: 'Identifica las partes del ojo',
-        finalTitle: 'Sentido de la vista',
+        summaryHTML: '<span class="theory-title">El sentido del oído</span>'
+            + '<p>El oído percibe el sonido e informa de la intensidad, tono y distancia. Podemos distinguir tres partes:</p>'
+            + '<div class="theory-section"><span class="theory-subtitle">Oído externo</span><ul class="theory-list">'
+            + '<li><strong>Oreja:</strong> Parte externa que ayuda a recoger sonidos.</li>'
+            + '<li><strong>Conducto auditivo:</strong> Canal que lleva el sonido hasta el oído medio.</li>'
+            + '</ul></div>'
+            + '<div class="theory-section"><span class="theory-subtitle">Oído medio</span><ul class="theory-list">'
+            + '<li><strong>Tímpano:</strong> Membrana que vibra y transmite la vibración a los huesecillos.</li>'
+            + '<li><strong>Huesecillos:</strong> Envían la vibración al caracol.</li>'
+            + '</ul></div>'
+            + '<div class="theory-section"><span class="theory-subtitle">Oído interno</span><ul class="theory-list">'
+            + '<li><strong>Caracol:</strong> Envía la información al nervio auditivo.</li>'
+            + '<li><strong>Nervio auditivo:</strong> Envía la información al cerebro.</li>'
+            + '</ul>'
+            + '<p class="theory-note">Nota: el caracol, también llamado cóclea, es el responsable del equilibrio.</p></div>',
+        game1Title: 'Identifica las partes del oído',
+        game2Title: 'Identifica las partes del oído',
+        classifyTitle: 'Clasifica las partes del oído',
+        classifyInstructions: 'Clasifica los elementos en las cajas correctas',
+        boxExternoLabel: 'Oído externo',
+        boxMedioLabel: 'Oído medio',
+        boxInternoLabel: 'Oído interno',
+        checkBtn: 'Comprobar',
+        finalTitle: 'Sentido del oído',
         scoreLabel: 'Puntuación:',
         timeLabel: 'Tiempo:',
         backBtn: 'Volver al menú',
@@ -461,37 +492,38 @@ const i18n = {
         msg0: 'Vaya desastre... ¿Seguro que has estudiado?'
     },
     en: {
-        startTitle: 'The human eye',
-        startSubtitle: 'Outer and inner parts of the human eye',
-        startAdvice: 'Review and learn the main parts of the <span class="highlight-keyword">outer eye</span> (eyebrows, eyelashes, eyelids, tear duct, sclera, iris, pupil) and the <span class="highlight-keyword">inner eye</span> (cornea, iris, pupil, crystalline lens, retina and optic nerve).<strong style="display:block;margin-top:.5rem;text-align:center;">Good luck!</strong>',
+        startTitle: 'The ear',
+        startSubtitle: 'Identify the organs involved in the sense of hearing',
+        startAdvice: 'Review and learn the main parts of the <span class="highlight-keyword">external ear</span> (ear, ear canal), the <span class="highlight-keyword">middle ear</span> (eardrum and ossicles) and the <span class="highlight-keyword">internal ear</span> (cochlea and auditory nerve).<strong style="display:block;margin-top:.5rem;text-align:center;">Good luck!</strong>',
         startBtn: 'Start',
         hofTitle: 'Best scores',
         hofPos: 'Position', hofName: 'Name', hofPoints: 'Points', hofTime: 'Time',
-        summary1Header: 'Outer eye',
-        summary2Header: 'Inner eye',
+        summaryHeader: 'Hearing',
         continueBtn: 'Continue',
-        summary1HTML: '<span class="theory-title">External Parts of the Eye</span><ul class="theory-list">'
-            + '<li><strong>Eyebrows:</strong> Prevent sweat from entering the eye.</li>'
-            + '<li><strong>Eyelashes:</strong> Protect the eye from dust and small particles.</li>'
-            + '<li><strong>Tear duct:</strong> Produces tears to humidify the eye.</li>'
-            + '<li><strong>Eyelids:</strong> Close to protect the eye and spread tears.</li>'
-            + '<li><strong>Sclera:</strong> The white part of the eye.</li>'
-            + '<li><strong>Iris:</strong> The coloured part of the eye.</li>'
-            + '<li><strong>Pupil:</strong> The hole where light enters.</li>'
-            + '</ul>',
-        summary2HTML: '<span class="theory-title">Internal Parts of the Eye</span><ul class="theory-list">'
-            + '<li><strong>Cornea:</strong> The protective layer of the eye.</li>'
-            + '<li><strong>Iris:</strong> Opens and closes to let the light pass.</li>'
-            + '<li><strong>Pupil:</strong> The hole where light enters.</li>'
-            + '<li><strong>Crystalline lens:</strong> The lens that focuses light on the retina.</li>'
-            + '<li><strong>Retina:</strong> Sends the information to the optic nerve.</li>'
-            + '<li><strong>Optic nerve:</strong> Sends the information to the brain.</li>'
-            + '</ul>',
-        game1aTitle: 'Identify the external parts of the eye',
-        game1bTitle: 'Identify the external parts of the eye',
-        game2aTitle: 'Point out the internal parts of the eye',
-        game2bTitle: 'Identify the parts of the eye',
-        finalTitle: 'Sense of sight',
+        summaryHTML: '<span class="theory-title">Hearing</span>'
+            + '<p>Hearing sense receives sound and gives information about intensity, tone, and distance. It has three parts:</p>'
+            + '<div class="theory-section"><span class="theory-subtitle">External Ear</span><ul class="theory-list">'
+            + '<li><strong>Ear:</strong> The external part that helps to capture sounds.</li>'
+            + '<li><strong>Ear canal:</strong> Tube that passes the sound to the middle ear.</li>'
+            + '</ul></div>'
+            + '<div class="theory-section"><span class="theory-subtitle">Middle Ear</span><ul class="theory-list">'
+            + '<li><strong>Eardrum:</strong> A membrane that vibrates and transmits the vibration to the small bones.</li>'
+            + '<li><strong>Ossicles:</strong> Pass the vibration to the cochlea.</li>'
+            + '</ul></div>'
+            + '<div class="theory-section"><span class="theory-subtitle">Internal Ear</span><ul class="theory-list">'
+            + '<li><strong>Cochlea:</strong> Sends the information to the auditory nerve.</li>'
+            + '<li><strong>Auditory nerve:</strong> Passes the information to the brain.</li>'
+            + '</ul>'
+            + '<p class="theory-note">Note: the cochlea is also responsible for balance.</p></div>',
+        game1Title: 'Identify the parts of the ear',
+        game2Title: 'Identify the parts of the ear',
+        classifyTitle: 'Classify the parts of the ear',
+        classifyInstructions: 'Classify the elements into the correct boxes',
+        boxExternoLabel: 'External Ear',
+        boxMedioLabel: 'Middle Ear',
+        boxInternoLabel: 'Internal Ear',
+        checkBtn: 'Check',
+        finalTitle: 'Sense of hearing',
         scoreLabel: 'Score:',
         timeLabel: 'Time:',
         backBtn: 'Back to menu',
@@ -628,12 +660,17 @@ function applyLanguage(lang) {
     document.getElementById('hofPoints').textContent = t.hofPoints;
     document.getElementById('hofTime').textContent = t.hofTime;
 
-    document.getElementById('summary1Header').textContent = t.summary1Header;
-    document.getElementById('summary2Header').textContent = t.summary2Header;
-    document.getElementById('summary1Body').innerHTML = t.summary1HTML;
-    document.getElementById('summary2Body').innerHTML = t.summary2HTML;
-    document.getElementById('continue1Btn').textContent = t.continueBtn;
-    document.getElementById('continue2Btn').textContent = t.continueBtn;
+    document.getElementById('summaryHeader').textContent = t.summaryHeader;
+    document.getElementById('summaryBody').innerHTML = t.summaryHTML;
+    document.getElementById('continueSummaryBtn').textContent = t.continueBtn;
+
+    document.getElementById('classifyTitle').textContent = t.classifyTitle;
+    document.getElementById('classifyInstructions').textContent = t.classifyInstructions;
+    document.getElementById('boxExternoLabel').textContent = t.boxExternoLabel;
+    document.getElementById('boxMedioLabel').textContent = t.boxMedioLabel;
+    document.getElementById('boxInternoLabel').textContent = t.boxInternoLabel;
+    document.getElementById('checkClassifyBtn').textContent = t.checkBtn;
+    document.getElementById('continueClassifyBtn').textContent = t.continueBtn;
 
     document.getElementById('finalTitle').textContent = t.finalTitle;
     document.getElementById('scoreLabel').textContent = t.scoreLabel;
@@ -647,18 +684,27 @@ function applyLanguage(lang) {
     document.getElementById('playerName').placeholder = t.namePlaceholder;
     document.getElementById('playerSurname').placeholder = t.surnamePlaceholder;
 
-    // Título y palabra dinámica del juego activo
-    if (activeGame && GAMES[activeGame]) {
+    // Elemento dinámico activo: juego 1 / juego 2 (casillas)
+    if ((activeGame === 'game1' || activeGame === 'game2') && GAMES[activeGame]) {
         document.getElementById('gameTitle').textContent = t[activeGame + 'Title'];
         const cfg = GAMES[activeGame];
         const arr = gameDataI18n[lang][cfg.dataKey];
         if (currentTargetIndex !== null && currentTargetIndex !== undefined && arr && arr[currentTargetIndex]) {
             const newWord = arr[currentTargetIndex].text;
-            document.getElementById('eyeWordText').textContent = newWord;
-            // Cambio de idioma a mitad de partida: cancela lo que suene y relee en el nuevo idioma
+            document.getElementById('earWordText').textContent = newWord;
             window.speechSynthesis.cancel();
             speakText(newWord, lang);
         }
+    }
+
+    // Elementos dinámicos activos: juego 3 (tarjetas de clasificación, colocadas o en el banco)
+    if (activeGame === 'game3') {
+        document.querySelectorAll('#classifyScreen .draggable-item[data-orig-index]').forEach(el => {
+            const idx = parseInt(el.getAttribute('data-orig-index'), 10);
+            if (!isNaN(idx) && gameDataI18n[lang].g1[idx]) {
+                el.textContent = gameDataI18n[lang].g1[idx].text;
+            }
+        });
     }
 }
 
@@ -718,7 +764,9 @@ function stopTimer() {
 }
 
 function updateTimerDisplay(sec) {
-    document.getElementById('timerDisplay').textContent = formatTime(sec);
+    const txt = formatTime(sec);
+    document.getElementById('timerDisplay').textContent = txt;
+    document.getElementById('timerDisplay3').textContent = txt;
 }
 
 function formatTime(sec) {
@@ -730,6 +778,7 @@ function formatTime(sec) {
 
 function updateProgress(pct) {
     document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressFill3').style.width = pct + '%';
 }
 
 function shuffle(array) {
@@ -742,9 +791,21 @@ function shuffle(array) {
     return array;
 }
 
+/* ====================================================
+   PUNTUACIÓN FINAL
+===================================================== */
+let game1Attempts = 0;
+let game2Attempts = 0;
+let game3CorrectCount = 0;
+
 function calcularPuntuacionFinal() {
-    const score = 100 - ((totalAttempts - MIN_ATTEMPTS) * (100 / MIN_ATTEMPTS));
-    return Math.max(0, Math.round(score));
+    const p1 = Math.max(0, Math.round(100 - ((game1Attempts - 6) * (100 / 6))));
+    const p2 = Math.max(0, Math.round(100 - ((game2Attempts - 6) * (100 / 6))));
+    const puntJuegos1y2 = Math.round((p1 + p2) / 2);
+    const puntJuego3 = Math.round((game3CorrectCount / 6) * 100);
+    let final = Math.round((puntJuegos1y2 + puntJuego3) / 2);
+    final = Math.min(100, Math.max(0, final));
+    return final;
 }
 
 /* ====================================================
@@ -763,18 +824,20 @@ function preloadWithTimeout(urls, timeoutMs) {
 }
 
 /* ====================================================
-   JUEGO: EL OJO (4 juegos encadenados sobre la misma pantalla)
+   JUEGO 1 y 2: CASILLAS SOBRE IMAGEN
 ===================================================== */
 let gameQueue = [];
 let queuePos = 0;
 let currentTargetIndex = null;
+let hotspotsBuilt = false;
 
-function buildHotspots(coords) {
-    const container = document.getElementById('eyeHotspots');
+function buildHotspots() {
+    if (hotspotsBuilt) return;
+    const container = document.getElementById('earHotspots');
     container.innerHTML = '';
-    coords.forEach((c, idx) => {
+    earCoords.forEach((c, idx) => {
         const div = document.createElement('div');
-        div.className = 'eye-hotspot';
+        div.className = 'ear-hotspot';
         div.setAttribute('data-orig-index', idx);
         div.style.left = (c.x1 / IMG_W * 100) + '%';
         div.style.top = (c.y1 / IMG_H * 100) + '%';
@@ -783,6 +846,7 @@ function buildHotspots(coords) {
         div.addEventListener('click', () => handleHotspotClick(idx, div));
         container.appendChild(div);
     });
+    hotspotsBuilt = true;
 }
 
 function startGame(key) {
@@ -791,11 +855,11 @@ function startGame(key) {
 
     document.getElementById('gameTitle').textContent = i18n[currentLang][key + 'Title'];
 
-    const img = document.getElementById('eyeImg');
-    document.getElementById('eyeImageWrapper').classList.remove('img-error');
-    if (img.getAttribute('src') !== cfg.img) img.setAttribute('src', cfg.img);
+    const img = document.getElementById('earImg');
+    document.getElementById('earImageWrapper').classList.remove('img-error');
+    if (img.getAttribute('src') !== EAR_IMG_URL) img.setAttribute('src', EAR_IMG_URL);
 
-    buildHotspots(cfg.coords);
+    buildHotspots();
 
     gameQueue = shuffle(Array.from({ length: cfg.count }, (_, i) => i));
     queuePos = 0;
@@ -808,13 +872,13 @@ function loadCurrentWord() {
     const cfg = GAMES[activeGame];
     currentTargetIndex = gameQueue[queuePos];
     const word = gameDataI18n[currentLang][cfg.dataKey][currentTargetIndex].text;
-    document.getElementById('eyeWordText').textContent = word;
+    document.getElementById('earWordText').textContent = word;
     setTimeout(() => { speakText(word, currentLang); }, 300);
 }
 
 function handleHotspotClick(idx, el) {
-    if (!activeGame) return;
-    totalAttempts++;
+    if (!activeGame || (activeGame !== 'game1' && activeGame !== 'game2')) return;
+    if (activeGame === 'game1') game1Attempts++; else game2Attempts++;
     window.speechSynthesis.cancel();
 
     if (idx === currentTargetIndex) {
@@ -839,32 +903,211 @@ function handleHotspotClick(idx, el) {
 
 function advanceAfterGame() {
     const finished = activeGame;
-    if (finished === 'game1a') {
+    if (finished === 'game1') {
         activeGame = null;
+        // Transición con sonido "Completado" y 1s de espera antes de mostrar el juego 2
         reproducirSonidoCompletado();
-        setTimeout(() => startGame('game1b'), 1000);
-    } else if (finished === 'game1b') {
+        setTimeout(() => startGame('game2'), 1000);
+    } else if (finished === 'game2') {
         activeGame = null;
         window.speechSynthesis.cancel();
-        showScreen('summary2Screen');
-    } else if (finished === 'game2a') {
-        activeGame = null;
-        reproducirSonidoCompletado();
-        setTimeout(() => startGame('game2b'), 1000);
-    } else if (finished === 'game2b') {
-        finishGame();
+        startClassifyGame();
     }
 }
 
 document.getElementById('btnPlayWord').onclick = () => {
     if (!activeGame || currentTargetIndex === null) return;
+    if (activeGame !== 'game1' && activeGame !== 'game2') return;
     const cfg = GAMES[activeGame];
     speakText(gameDataI18n[currentLang][cfg.dataKey][currentTargetIndex].text, currentLang);
 };
 
-document.getElementById('eyeImg').onerror = () => {
-    document.getElementById('eyeImageWrapper').classList.add('img-error');
+document.getElementById('earImg').onerror = () => {
+    document.getElementById('earImageWrapper').classList.add('img-error');
 };
+
+/* ====================================================
+   JUEGO 3: CLASIFICAR (drag & drop + tap-tap)
+===================================================== */
+let classifySelectedItem = null;
+let classifyLocked = false;
+
+function startClassifyGame() {
+    activeGame = 'game3';
+    classifyLocked = false;
+    classifySelectedItem = null;
+
+    document.getElementById('classifyTitle').textContent = i18n[currentLang].classifyTitle;
+    document.getElementById('checkClassifyBtn').classList.remove('hidden');
+    document.getElementById('checkClassifyBtn').style.display = 'inline-flex';
+    document.getElementById('continueClassifyBtn').classList.remove('show');
+    document.getElementById('classifyBank').classList.remove('disabled');
+    document.querySelectorAll('#classifyScreen .sort-box').forEach(box => box.classList.remove('disabled'));
+    document.querySelectorAll('#classifyScreen .sort-content').forEach(sc => sc.innerHTML = '');
+
+    const bank = document.getElementById('classifyBank');
+    bank.innerHTML = '';
+    const order = shuffle(Array.from({ length: 6 }, (_, i) => i));
+    order.forEach(idx => {
+        const el = createClassifyItem(idx);
+        bank.appendChild(el);
+    });
+
+    showScreen('classifyScreen');
+}
+
+function createClassifyItem(idx) {
+    const el = document.createElement('div');
+    el.className = 'draggable-item';
+    el.textContent = gameDataI18n[currentLang].g1[idx].text;
+    el.setAttribute('data-orig-index', idx);
+    el.setAttribute('draggable', 'true');
+
+    el.addEventListener('click', () => handleClassifyItemClick(el));
+
+    el.addEventListener('dragstart', (e) => {
+        if (classifyLocked) { e.preventDefault(); return; }
+        e.dataTransfer.setData('text/plain', idx.toString());
+        el.classList.add('dragging');
+    });
+    el.addEventListener('dragend', () => {
+        el.classList.remove('dragging');
+    });
+
+    return el;
+}
+
+function handleClassifyItemClick(el) {
+    if (classifyLocked) return;
+    if (el.classList.contains('correct') || el.classList.contains('wrong')) return;
+
+    const inBox = el.closest('.sort-content');
+    if (inBox) {
+        // Ya está colocado: al pulsarlo vuelve al banco
+        document.getElementById('classifyBank').appendChild(el);
+        if (classifySelectedItem === el) classifySelectedItem = null;
+        el.classList.remove('selected');
+        reproducirSonidoTap();
+        return;
+    }
+
+    // Está en el banco: selección tap-tap
+    if (classifySelectedItem === el) {
+        el.classList.remove('selected');
+        classifySelectedItem = null;
+        return;
+    }
+    if (classifySelectedItem) classifySelectedItem.classList.remove('selected');
+    classifySelectedItem = el;
+    el.classList.add('selected');
+    reproducirSonidoTap();
+}
+
+document.querySelectorAll('#classifyScreen .sort-box').forEach(box => {
+    const content = box.querySelector('.sort-content');
+
+    // Tap-tap: al pulsar la caja, coloca el elemento seleccionado
+    box.addEventListener('click', (e) => {
+        if (classifyLocked) return;
+        if (e.target.closest('.draggable-item')) return; // ya gestionado por el propio item
+        if (classifySelectedItem) {
+            content.appendChild(classifySelectedItem);
+            classifySelectedItem.classList.remove('selected');
+            classifySelectedItem = null;
+            reproducirSonidoTap();
+        }
+    });
+
+    // Drag & drop: soltar sobre la caja (desde el banco o desde otra caja)
+    box.addEventListener('dragover', (e) => {
+        if (classifyLocked) return;
+        e.preventDefault();
+        box.classList.add('drag-over');
+    });
+    box.addEventListener('dragleave', () => {
+        box.classList.remove('drag-over');
+    });
+    box.addEventListener('drop', (e) => {
+        if (classifyLocked) return;
+        e.preventDefault();
+        box.classList.remove('drag-over');
+        const idx = e.dataTransfer.getData('text/plain');
+        const dragged = document.querySelector(`#classifyScreen .draggable-item.dragging[data-orig-index="${idx}"]`)
+            || document.querySelector(`#classifyScreen .draggable-item[data-orig-index="${idx}"]`);
+        if (dragged) {
+            content.appendChild(dragged);
+            dragged.classList.remove('selected', 'dragging');
+            if (classifySelectedItem === dragged) classifySelectedItem = null;
+            reproducirSonidoTap();
+        }
+    });
+});
+
+const classifyBankEl = document.getElementById('classifyBank');
+classifyBankEl.addEventListener('dragover', (e) => {
+    if (classifyLocked) return;
+    e.preventDefault();
+});
+classifyBankEl.addEventListener('drop', (e) => {
+    if (classifyLocked) return;
+    e.preventDefault();
+    const idx = e.dataTransfer.getData('text/plain');
+    const dragged = document.querySelector(`#classifyScreen .draggable-item[data-orig-index="${idx}"]`);
+    if (dragged) {
+        classifyBankEl.appendChild(dragged);
+        dragged.classList.remove('selected', 'dragging');
+        if (classifySelectedItem === dragged) classifySelectedItem = null;
+    }
+});
+
+function checkClassifyGame() {
+    if (classifyLocked) return;
+    classifyLocked = true;
+    window.speechSynthesis.cancel();
+
+    let correct = 0;
+    let errors = 0;
+
+    document.querySelectorAll('#classifyScreen .sort-box').forEach(box => {
+        const boxType = box.dataset.type;
+        box.querySelectorAll('.sort-content .draggable-item').forEach(item => {
+            const idx = parseInt(item.getAttribute('data-orig-index'), 10);
+            item.classList.remove('correct', 'wrong');
+            if (classifyTypes[idx] === boxType) {
+                item.classList.add('correct');
+                correct++;
+            } else {
+                item.classList.add('wrong');
+                errors++;
+            }
+        });
+        box.classList.add('disabled');
+    });
+
+    // Los elementos que hayan quedado sin colocar en el banco cuentan como incorrectos
+    document.querySelectorAll('#classifyBank .draggable-item').forEach(item => {
+        item.classList.remove('correct', 'wrong', 'selected');
+        item.classList.add('wrong');
+        errors++;
+    });
+    document.getElementById('classifyBank').classList.add('disabled');
+
+    game3CorrectCount = correct;
+    correctCountGlobal += correct;
+    updateProgress((correctCountGlobal / TOTAL_ITEMS) * 100);
+
+    document.getElementById('checkClassifyBtn').style.display = 'none';
+    document.getElementById('continueClassifyBtn').classList.add('show');
+
+    if (errors === 0) {
+        reproducirSonidoCompletado();
+    } else {
+        reproducirSonidoError();
+    }
+}
+
+document.getElementById('checkClassifyBtn').onclick = () => { reproducirSonidoTap(); checkClassifyGame(); };
+document.getElementById('continueClassifyBtn').onclick = () => { reproducirSonidoTap(); finishGame(); };
 
 /* ====================================================
    FINAL DEL JUEGO
@@ -1042,26 +1285,23 @@ document.getElementById('playBtn').onclick = () => {
     reproducirSonidoTap();
     unlockAudioContext();
     forceInitTTS();
-    preloadWithTimeout([EXT_IMG_URL, INT_IMG_URL], 4500).then(() => {
-        showScreen('summary1Screen');
+    preloadWithTimeout([EAR_IMG_URL], 4500).then(() => {
+        showScreen('summaryScreen');
     });
 };
 
-document.getElementById('continue1Btn').onclick = () => {
+document.getElementById('continueSummaryBtn').onclick = () => {
     reproducirSonidoTap();
     timerStopped = false;
     elapsed = 0;
     timerInterval = null;
-    totalAttempts = 0;
     correctCountGlobal = 0;
+    game1Attempts = 0;
+    game2Attempts = 0;
+    game3CorrectCount = 0;
     updateProgress(0);
     startGlobalTimer();
-    startGame('game1a');
-};
-
-document.getElementById('continue2Btn').onclick = () => {
-    reproducirSonidoTap();
-    startGame('game2a');
+    startGame('game1');
 };
 
 document.getElementById('backToMenuBtn').onclick = () => {
